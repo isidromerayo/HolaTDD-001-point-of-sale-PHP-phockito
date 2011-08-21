@@ -6,31 +6,36 @@
  */
 class PointOfSaleTest extends PHPUnit_Framework_TestCase {
     
+    private $screen;
+    private $catalog;
+    private $pointOfSale;
+    
+    protected function setUp() {
+        $this->screen = Phockito::mock('Screen');
+        $this->catalog = Phockito::mock('Catalog');
+     
+        $this->pointOfSale = new PointOfSale($this->catalog, $this->screen);
+    }
+    
     /**
      * @test
      */
     public function onBarcode_search_catalog() {
-        $screen = Phockito::mock('Screen');
-        $catalog = Phockito::mock('Catalog');
-     
-        $pointOfSale = new PointOfSale($catalog, $screen);
-        $pointOfSale->onBarcode('123');
+
+        $this->pointOfSale->onBarcode('123');
         
-        Phockito::verify($catalog)->search('123');
+        Phockito::verify($this->catalog)->search('123');
     }
     
     /**
      * @test
      */
     public function onBarcode_show_price() {
-        $screen = Phockito::mock('Screen');
-        $catalog = Phockito::mock('Catalog');
         
-        Phockito::when($catalog)->search('123')->return('1€');
+        Phockito::when($this->catalog)->search('123')->return('1€');
 
-        $pointOfSale = new PointOfSale($catalog, $screen);
-        $pointOfSale->onBarcode('123');
+        $this->pointOfSale->onBarcode('123');
         
-        Phockito::verify($screen)->show('1€');
+        Phockito::verify($this->screen)->show('1€');
     }
 }
